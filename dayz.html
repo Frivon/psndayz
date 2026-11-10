@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSN Inventory — DayZ Locker</title>
+<style>
+:root{--bg:#0b1017;--panel:#121b26;--panel2:#182433;--line:#263648;--text:#edf4fb;--muted:#91a2b5;--cyan:#43d5e8;--orange:#ff9b52;--green:#67d6a0;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0%,#173044 0,transparent 32%),var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,Segoe UI,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:#0d141d;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:.08em}.brandmark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--cyan),#2479a9);display:grid;place-items:center;color:#06121a;font-size:21px}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.2em;font-weight:700}
+.navlabel{color:#64778b;font-size:10px;font-weight:800;letter-spacing:.16em;margin:0 10px 8px}
+.nav button{display:flex;gap:12px;align-items:center;width:100%;border:0;background:transparent;color:#a9b8c8;padding:12px;border-radius:10px;text-align:left;margin:3px 0}
+.nav button.active,.nav button:hover{background:#192a39;color:white}.nav .ico{width:20px;text-align:center;color:var(--cyan)}
+.side-note{margin-top:auto;border:1px solid var(--line);background:#111d29;padding:14px;border-radius:13px;color:var(--muted);font-size:12px}
+main{padding:30px clamp(18px,4vw,54px);max-width:1500px;width:100%;margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:30px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(27px,4vw,38px);line-height:1.1;margin:7px 0 8px;letter-spacing:-.04em}.sub{color:var(--muted);margin:0}
+.profile{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:8px 13px;border-radius:30px;color:#c5d2df;font-size:13px}
+.avatar{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#24475a;color:var(--cyan);font-weight:800}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#192635;color:var(--text);font-weight:700}.btn.primary{background:linear-gradient(110deg,#42d2e4,#7ce0cf);color:#07151b;border:0}.btn:hover{filter:brightness(1.12)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.stat,.panel{background:linear-gradient(145deg,#152130,#101923);border:1px solid var(--line);border-radius:15px}.stat{padding:17px}.stat-head{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:29px;margin-top:9px;letter-spacing:-.04em}.stat .symbol{color:var(--cyan);font-size:19px}
+.content-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:17px}.panel{padding:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.panel h2{font-size:16px;margin:0}.muted{color:var(--muted)}.account{display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);background:#111c28;border-radius:12px;margin-bottom:10px}.ps-icon{width:43px;height:43px;border-radius:12px;background:#1c4052;color:var(--cyan);display:grid;place-items:center;font-size:20px}.account-info{flex:1;min-width:0}.account-info b{display:block}.account-info small{color:var(--muted)}.pill{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--green);background:#16382f;padding:5px 8px;border-radius:20px}
+.inventory-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.field{background:#0c151e;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px 12px;min-width:0}.field:focus{outline:1px solid var(--cyan);border-color:var(--cyan)}.search{flex:1;min-width:180px}
+.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item{border:1px solid var(--line);background:#111c28;border-radius:12px;overflow:hidden}.item-art{height:116px;background:radial-gradient(circle at 50% 45%,#29475b,#142330 70%);display:grid;place-items:center;font-size:38px;color:#9deaf0;position:relative}.item-art img{width:100%;height:100%;object-fit:cover}.item-art .category{position:absolute;top:9px;left:9px;font-size:9px;background:#07131cce;padding:5px 7px;border-radius:6px;color:#c5d9e8}.item-body{padding:12px}.item-body b{display:block}.item-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:5px}.item-actions{display:flex;gap:7px;margin-top:11px}.mini{border:1px solid var(--line);background:#1b2a39;color:#b9c9d8;border-radius:7px;padding:6px 9px;font-size:11px}.mini.danger{color:#ff9292}
+.empty{padding:28px 15px;text-align:center;color:var(--muted);border:1px dashed #34485b;border-radius:12px;grid-column:1/-1}.empty strong{display:block;color:#dce8f2;margin-bottom:5px}
+.activity{display:flex;gap:11px;padding:12px 0;border-bottom:1px solid #243342;font-size:12px}.activity:last-child{border:0}.dot{width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:5px;flex:none}.activity time{display:block;color:#71859a;font-size:10px;margin-top:3px}
+.notice{margin-top:17px;padding:13px 15px;background:#172b36;border:1px solid #28505b;border-radius:11px;color:#b8d8e0;font-size:12px}
+.overlay{position:fixed;inset:0;background:#02070bc9;display:none;align-items:center;justify-content:center;padding:18px;z-index:5}.overlay.show{display:flex}.modal{width:min(540px,100%);max-height:92vh;overflow:auto;background:#111c28;border:1px solid #385064;border-radius:17px;padding:22px;box-shadow:0 25px 90px #0009}.modal h2{margin:0 0 5px}.modal p{margin:0 0 18px;color:var(--muted);font-size:13px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.formrow{display:flex;flex-direction:column;gap:6px}.formrow.full{grid-column:1/-1}.formrow label{font-size:11px;color:#a9bbcc;font-weight:700}.formrow input,.formrow select,.formrow textarea{width:100%}.formrow textarea{min-height:75px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+footer{color:#66798d;font-size:11px;margin:25px 0 5px;text-align:center}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{padding:13px 16px;flex-direction:row;align-items:center;justify-content:space-between;border-right:0;border-bottom:1px solid var(--line)}.navlabel,.side-note{display:none}.nav{display:flex}.nav button{width:auto;padding:9px}.nav button span:last-child{display:none}.brand small{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){main{padding:22px 14px}.topbar{align-items:flex-start;flex-direction:column}.profile{display:none}.content-grid{grid-template-columns:1fr}.items{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.formrow.full{grid-column:auto}.stat{padding:13px}.stat strong{font-size:24px}.sidebar{gap:8px}.brand{font-size:12px}.brandmark{width:34px;height:34px}.nav button{padding:8px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brandmark">⌖</div><div>PSN INVENTORY<small>DAYZ LOCKER</small></div></div>
+  <nav class="nav">
+    <div style="width:100%">
+      <div class="navlabel">ESPAÇO DO JOGADOR</div>
+      <button class="active" id="navDashboard"><span class="ico">▦</span><span>Painel geral</span></button>
+      <button id="navInventory"><span class="ico">▣</span><span>Inventário</span></button>
+      <button id="navAccounts"><span class="ico">◎</span><span>Contas PSN</span></button>
+    </div>
+  </nav>
+  <div class="side-note"><b style="color:#dce8f2">Seu arsenal, organizado.</b><br>Registre o que cada conta possui e consulte quando quiser.</div>
+</aside>
+<main>
+  <div class="topbar">
+    <div><div class="eyebrow">DAYZ · PLAYSTATION NETWORK</div><h1>Seu inventário, sempre à mão.</h1><p class="sub">Organize suas contas e equipamentos sem precisar entrar no jogo.</p></div>
+    <div class="profile"><div class="avatar">J</div><span>Meu espaço pessoal</span></div>
+  </div>
+  <div class="actions"><button class="btn primary" id="addItemTop">＋ Adicionar equipamento</button><button class="btn" id="addAccountTop">＋ Nova conta PSN</button></div>
+  <section class="stats">
+    <div class="stat"><div class="stat-head">CONTAS PSN <span class="symbol">◎</span></div><strong id="statAccounts">1</strong></div>
+    <div class="stat"><div class="stat-head">EQUIPAMENTOS <span class="symbol">▣</span></div><strong id="statItems">4</strong></div>
+    <div class="stat"><div class="stat-head">CATEGORIAS <span class="symbol">⌘</span></div><strong id="statCategories">4</strong></div>
+    <div class="stat"><div class="stat-head">JOGO <span class="symbol">◈</span></div><strong style="font-size:22px;margin-top:15px">DayZ</strong></div>
+  </section>
+  <div class="content-grid">
+    <section class="panel" id="inventoryPanel">
+      <div class="panel-head"><div><h2>Inventário cadastrado</h2><small class="muted">Itens por conta · localização atual do personagem</small></div><span class="pill">PESSOAL</span></div>
+      <div class="inventory-toolbar">
+        <input class="field search" id="search" placeholder="Buscar equipamento...">
+        <select class="field" id="accountFilter" aria-label="Filtrar conta"></select>
+        <select class="field" id="categoryFilter" aria-label="Filtrar categoria"><option value="">Todas categorias</option><option>Arma</option><option>Roupa</option><option>Proteção</option><option>Acessório</option><option>Munição</option><option>Suprimento</option><option>Outro</option></select>
+      </div>
+      <div class="items" id="items"></div>
+    </section>
+    <aside class="panel" id="accountsPanel">
+      <div class="panel-head"><h2>Minhas contas PSN</h2><button class="mini" id="addAccount">＋ Adicionar</button></div>
+      <div id="accounts"></div>
+      <div class="notice">🔒 Seus registros ficam salvos neste navegador. Não informe sua senha da PSN: o sistema não precisa dela.</div>
+      <div style="margin-top:20px"><div class="panel-head"><h2>Atividade recente</h2></div><div id="activity"></div></div>
+    </aside>
+  </div>
+  <footer>PSN INVENTORY MANAGER · Protótipo local · Os registros não são sincronizados com os servidores da PSN ou do DayZ.</footer>
+</main>
+</div>
+<div class="overlay" id="itemModal"><div class="modal">
+  <h2 id="itemModalTitle">Adicionar equipamento</h2><p>Cadastre um item e associe à conta PSN correta.</p>
+  <form id="itemForm"><div class="formgrid">
+    <div class="formrow full"><label for="itemName">NOME DO EQUIPAMENTO *</label><input class="field" id="itemName" required placeholder="Ex.: M4, Tundra, Plate Carrier"></div>
+    <div class="formrow"><label for="itemAccount">CONTA PSN *</label><select class="field" id="itemAccount" required></select></div>
+    <div class="formrow"><label for="itemCategory">CATEGORIA</label><select class="field" id="itemCategory"><option>Arma</option><option>Roupa</option><option>Proteção</option><option>Acessório</option><option>Munição</option><option>Suprimento</option><option>Outro</option></select></div>
+    <div class="formrow"><label for="itemQty">QUANTIDADE</label><input class="field" id="itemQty" type="number" min="1" value="1"></div>
+    <div class="formrow"><label for="itemCondition">ESTADO</label><select class="field" id="itemCondition"><option>Não informado</option><option>Impecável</option><option>Danificado</option><option>Arruinado</option></select></div>
+    <div class="formrow full"><label for="itemServer">SERVIDOR / OBSERVAÇÃO</label><input class="field" id="itemServer" placeholder="Opcional"></div>
+    <div class="formrow full"><label for="itemImage">URL DA FOTO (OPCIONAL)</label><input class="field" id="itemImage" type="url" placeholder="https://..."></div>
+  </div><div class="modal-actions"><button type="button" class="btn" data-close="itemModal">Cancelar</button><button class="btn primary" type="submit">Salvar equipamento</button></div></form>
+</div></div>
+<div class="overlay" id="accountModal"><div class="modal">
+  <h2>Adicionar conta PSN</h2><p>Cadastre o ID online que identifica a conta. Nunca use sua senha da PlayStation.</p>
+  <form id="accountForm"><div class="formgrid">
+    <div class="formrow full"><label for="accountName">ID ONLINE / NOME DA CONTA *</label><input class="field" id="accountName" required placeholder="Ex.: Mcn2-Bio0"></div>
+    <div class="formrow full"><label for="accountLocation">LOCALIZAÇÃO ATUAL NO DAYZ</label><input class="field" id="accountLocation" placeholder="Ex.: Prédio de Nadbor"></div>
+    <div class="formrow full"><label for="accountNote">APELIDO OU OBSERVAÇÃO</label><input class="field" id="accountNote" placeholder="Ex.: Personagem guardado no andar superior"></div>
+  </div><div class="modal-actions"><button type="button" class="btn" data-close="accountModal">Cancelar</button><button class="btn primary" type="submit">Salvar conta</button></div></form>
+</div></div>
+<script>
+const KEY='psn_inventory_manager_v1';
+const initial={
+ accounts:[{id:'acc1',name:'Mcn2-Bio0',note:'Conta principal',location:'Prédio de Nadbor'}],
+ items:[
+  {id:'i1',name:'M4',accountId:'acc1',category:'Arma',qty:1,condition:'Não informado',server:'',image:'',icon:'▰'},
+  {id:'i2',name:'Tundra',accountId:'acc1',category:'Arma',qty:1,condition:'Não informado',server:'',image:'',icon:'⌁'},
+  {id:'i3',name:'Night Vision',accountId:'acc1',category:'Acessório',qty:1,condition:'Não informado',server:'',image:'',icon:'◉'},
+  {id:'i4',name:'Plate Carrier Preto',accountId:'acc1',category:'Proteção',qty:1,condition:'Não informado',server:'',image:'',icon:'⬟'}
+ ],activity:[{text:'Inventário inicial cadastrado',time:new Date().toISOString()}]
+};
+let data;try{data=JSON.parse(localStorage.getItem(KEY))||initial}catch{data=initial}
+if(!data.accounts?.length)data.accounts=initial.accounts;
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const accountName=id=>data.accounts.find(a=>a.id===id)?.name||'Conta removida';
+function log(text){data.activity.unshift({text,time:new Date().toISOString()});data.activity=data.activity.slice(0,8);save();renderActivity()}
+function renderAccounts(){
+ $('accounts').innerHTML=data.accounts.map(a=>`<div class="account"><div class="ps-icon">◎</div><div class="account-info"><b>${esc(a.name)}</b><small>${esc(a.note||'Conta DayZ')} · ${data.items.filter(i=>i.accountId===a.id).length} itens</small><small style="display:block;color:#43d5e8;margin-top:4px">⌖ ${esc(a.location||'Localização não informada')}</small></div><span class="pill">ATIVA</span><button class="mini" title="Editar conta/localização" data-edit-account="${a.id}">Editar</button><button class="mini danger" title="Excluir conta" data-del-account="${a.id}">×</button></div>`).join('')||'<div class="empty">Nenhuma conta cadastrada.</div>';
+ const opts=data.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
+ $('accountFilter').innerHTML='<option value="">Todas as contas</option>'+opts;
+ $('itemAccount').innerHTML=opts;
+}
+function renderItems(){
+ const q=$('search').value.toLowerCase(),acc=$('accountFilter').value,cat=$('categoryFilter').value;
+ const list=data.items.filter(i=>(!q||(i.name+' '+i.server+' '+i.category).toLowerCase().includes(q))&&(!acc||i.accountId===acc)&&(!cat||i.category===cat));
+ $('items').innerHTML=list.map(i=>`<article class="item"><div class="item-art">${i.image?`<img src="${esc(i.image)}" alt="${esc(i.name)}" onerror="this.remove()">`:`<span>${i.category==='Arma'?'▰':i.category==='Proteção'?'⬟':i.category==='Acessório'?'◉':'◇'}</span>`}<span class="category">${esc(i.category)}</span></div><div class="item-body"><b>${esc(i.name)}</b><div class="item-meta"><span>Qtd. ${Number(i.qty)||1} · ${esc(i.condition)}</span><span>${esc(accountName(i.accountId))}</span></div>${i.server?`<div class="item-meta">${esc(i.server)}</div>`:''}<div class="item-actions"><button class="mini" data-edit="${i.id}">Editar</button><button class="mini danger" data-del-item="${i.id}">Excluir</button></div></div></article>`).join('')||'<div class="empty"><strong>Nenhum equipamento encontrado</strong>Adicione um item ou ajuste os filtros.</div>';
+ $('statItems').textContent=data.items.reduce((n,i)=>n+(Number(i.qty)||1),0);
+ $('statAccounts').textContent=data.accounts.length;
+ $('statCategories').textContent=new Set(data.items.map(i=>i.category)).size;
+}
+function renderActivity(){ $('activity').innerHTML=data.activity.slice(0,5).map(a=>`<div class="activity"><span class="dot"></span><div>${esc(a.text)}<time>${new Date(a.time).toLocaleString('pt-BR')}</time></div></div>`).join('')||'<small class="muted">Nenhuma atividade.</small>'}
+function render(){renderAccounts();renderItems();renderActivity()}
+function open(id){$(id).classList.add('show')}function close(id){$(id).classList.remove('show')}
+$('addItemTop').onclick=()=>{if(!data.accounts.length)return open('accountModal');$('itemForm').reset();$('itemForm').dataset.edit='';$('itemModalTitle').textContent='Adicionar equipamento';$('itemQty').value=1;renderAccounts();open('itemModal')};
+$('addAccountTop').onclick=$('addAccount').onclick=()=>{$('accountForm').reset();delete $('accountForm').dataset.edit;$('accountForm').querySelector('button[type="submit"]').textContent='Salvar conta';$('accountModal').querySelector('h2').textContent='Adicionar conta PSN';open('accountModal')};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>close(b.dataset.close));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)close(o.id)}));
+$('accountForm').onsubmit=e=>{
+ e.preventDefault();
+ const name=$('accountName').value.trim(),editId=$('accountForm').dataset.edit;
+ if(data.accounts.some(a=>a.name.toLowerCase()===name.toLowerCase()&&a.id!==editId))return alert('Essa conta já está cadastrada.');
+ const values={name,note:$('accountNote').value.trim(),location:$('accountLocation').value.trim()};
+ if(editId){
+  data.accounts=data.accounts.map(a=>a.id===editId?{...a,...values}:a);
+  log('Conta '+name+' atualizada — localização: '+(values.location||'não informada'));
+ }else{
+  data.accounts.push({id:'a'+Date.now(),...values});
+  log('Conta PSN '+name+' adicionada');
+ }
+ delete $('accountForm').dataset.edit;
+ $('accountForm').querySelector('button[type="submit"]').textContent='Salvar conta';
+ $('accountModal').querySelector('h2').textContent='Adicionar conta PSN';
+ save();render();close('accountModal')
+};
+$('itemForm').onsubmit=e=>{e.preventDefault();const id=$('itemForm').dataset.edit;const item={id:id||'i'+Date.now(),name:$('itemName').value.trim(),accountId:$('itemAccount').value,category:$('itemCategory').value,qty:Math.max(1,Number($('itemQty').value)||1),condition:$('itemCondition').value,server:$('itemServer').value.trim(),image:$('itemImage').value.trim()};if(id){data.items=data.items.map(x=>x.id===id?item:x);log(item.name+' atualizado')}else{data.items.push(item);log(item.name+' adicionado ao inventário')}save();render();close('itemModal')};
+$('items').addEventListener('click',e=>{const del=e.target.closest('[data-del-item]'),edit=e.target.closest('[data-edit]');if(del){const i=data.items.find(x=>x.id===del.dataset.delItem);if(confirm('Excluir '+i.name+' do inventário?')){data.items=data.items.filter(x=>x.id!==i.id);save();log(i.name+' removido do inventário');render()}}if(edit){const i=data.items.find(x=>x.id===edit.dataset.edit);renderAccounts();$('itemForm').dataset.edit=i.id;$('itemModalTitle').textContent='Editar equipamento';for(const [id,v] of Object.entries({itemName:i.name,itemAccount:i.accountId,itemCategory:i.category,itemQty:i.qty,itemCondition:i.condition,itemServer:i.server,itemImage:i.image}))$(id).value=v;open('itemModal')}});
+$('accounts').addEventListener('click',e=>{
+ const edit=e.target.closest('[data-edit-account]');
+ if(edit){
+  const a=data.accounts.find(x=>x.id===edit.dataset.editAccount);
+  $('accountForm').reset();
+  $('accountName').value=a.name;
+  $('accountLocation').value=a.location||'';
+  $('accountNote').value=a.note||'';
+  $('accountForm').dataset.edit=a.id;
+  $('accountModal').querySelector('h2').textContent='Editar conta PSN';
+  $('accountForm').querySelector('button[type="submit"]').textContent='Salvar alterações';
+  open('accountModal');
+  return;
+ }
+ const b=e.target.closest('[data-del-account]');if(!b)return;
+ const a=data.accounts.find(x=>x.id===b.dataset.delAccount);
+ if(data.accounts.length===1)return alert('Mantenha pelo menos uma conta cadastrada.');
+ if(confirm('Excluir a conta '+a.name+'? Os equipamentos vinculados também serão excluídos.')){
+  data.accounts=data.accounts.filter(x=>x.id!==a.id);data.items=data.items.filter(x=>x.accountId!==a.id);
+  save();log('Conta '+a.name+' removida');render()
+ }
+});
+['search','accountFilter','categoryFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderItems));
+$('navInventory').onclick=()=>$('inventoryPanel').scrollIntoView({behavior:'smooth'});$('navAccounts').onclick=()=>$('accountsPanel').scrollIntoView({behavior:'smooth'});$('navDashboard').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+render();
+</script>
+</body></html>
